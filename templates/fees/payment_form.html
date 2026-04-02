@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label small fw-600">Student *</label>
+            {{ form.student }}
+            {% if form.student.errors %}<div class="text-danger small">{{ form.student.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Term *</label>
+            {{ form.term }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Year *</label>
+            {{ form.year }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Date Paid *</label>
+            {{ form.date_paid }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Amount (KSh) *</label>
+            {{ form.amount }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Method</label>
+            {{ form.method }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-600">Reference / Receipt No.</label>
+            {{ form.reference }}
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-600">Notes</label>
+            {{ form.notes }}
+          </div>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+            <i class="bi bi-check-lg me-1"></i>Save Payment
+          </button>
+          <a href="{% url 'fees:dashboard' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

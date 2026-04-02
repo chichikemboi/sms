@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{% url 'students:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <a href="{% url 'students:guardian_create' %}?next={% url 'students:create' %}"
+     class="btn btn-sm btn-outline-primary" style="border-radius:0.6rem;">
+    <i class="bi bi-person-plus me-1"></i>Add Guardian First
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="card-body p-4">
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Section: Identity -->
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;border-left:4px solid #C9A227;padding-left:0.75rem;">
+        Identity & Personal
+      </h6>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Admission Number *</label>
+          {{ form.admission_number }}
+          {% if form.admission_number.errors %}<div class="text-danger small">{{ form.admission_number.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">First Name *</label>
+          {{ form.first_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Middle Name</label>
+          {{ form.middle_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Last Name *</label>
+          {{ form.last_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Date of Birth</label>
+          {{ form.date_of_birth }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Gender</label>
+          {{ form.gender }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Photo</label>
+          {{ form.photo }}
+        </div>
+      </div>
+
+      <!-- Section: Enrollment -->
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;border-left:4px solid #C9A227;padding-left:0.75rem;">
+        Enrollment
+      </h6>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Class *</label>
+          {{ form.class_section }}
+          {% if form.class_section.errors %}<div class="text-danger small">{{ form.class_section.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Date Admitted *</label>
+          {{ form.date_admitted }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Boarding Type</label>
+          {{ form.boarding_type }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">Status</label>
+          {{ form.status }}
+        </div>
+      </div>
+
+      <!-- Section: Academic Entry -->
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;border-left:4px solid #C9A227;padding-left:0.75rem;">
+        KCPE & NEMIS
+      </h6>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label small fw-600">KCPE Index No.</label>
+          {{ form.kcpe_index }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">KCPE Marks</label>
+          {{ form.kcpe_marks }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-600">NEMIS UPI No.</label>
+          {{ form.nemis_no }}
+        </div>
+      </div>
+
+      <!-- Section: Guardian -->
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;border-left:4px solid #C9A227;padding-left:0.75rem;">
+        Guardian
+      </h6>
+      <div class="row g-3 mb-4">
+        <div class="col-md-8">
+          <label class="form-label small fw-600">Select Guardian *</label>
+          {{ form.guardian }}
+          {% if form.guardian.errors %}<div class="text-danger small">{{ form.guardian.errors.0 }}</div>{% endif %}
+          <div class="form-text">Guardian not listed?
+            <a href="{% url 'students:guardian_create' %}" target="_blank">Add guardian first</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Health & Notes -->
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;border-left:4px solid #C9A227;padding-left:0.75rem;">
+        Health &amp; Notes
+      </h6>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label small fw-600">Medical Notes</label>
+          {{ form.medical_notes }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-600">Special Needs</label>
+          {{ form.special_needs }}
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-600">Admin Notes (internal only)</label>
+          {{ form.notes }}
+        </div>
+      </div>
+
+      <hr class="my-3">
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+          <i class="bi bi-check-lg me-1"></i>Save Student
+        </button>
+        <a href="{% url 'students:list' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

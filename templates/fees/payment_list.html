@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Payment History — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}All Payments{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <form method="get" class="d-flex gap-2">
+    <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm"
+           placeholder="Search name or reference..." style="width:260px;">
+    <button class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">Search</button>
+  </form>
+  <a href="{% url 'fees:payment_create' %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-plus-lg me-1"></i>Record Payment
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-3 small" style="color:#1B3A6B;">Date</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Student</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Term / Year</th>
+          <th class="py-3 small text-end" style="color:#1B3A6B;">Amount (KSh)</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Method</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Reference</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Received By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td class="ps-4 small">{{ p.date_paid|date:"d M Y" }}</td>
+          <td>
+            <div class="fw-600 small" style="color:#1B3A6B;">{{ p.student.short_name }}</div>
+            <div class="text-muted" style="font-size:0.72rem;">{{ p.student.admission_number }}</div>
+          </td>
+          <td class="small text-muted">Term {{ p.term }} / {{ p.year }}</td>
+          <td class="text-end fw-600 text-success small">{{ p.amount|floatformat:0 }}</td>
+          <td class="small">{{ p.get_method_display }}</td>
+          <td class="small text-muted">{{ p.reference|default:"—" }}</td>
+          <td class="small text-muted">{{ p.received_by.get_full_name|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4 text-muted">No payments found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

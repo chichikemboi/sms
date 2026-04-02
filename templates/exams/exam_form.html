@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label small fw-600">Exam Name *</label>
+            {{ form.name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Type</label>
+            {{ form.exam_type }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-600">Term</label>
+            {{ form.term }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-600">Year</label>
+            {{ form.year }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Start Date</label>
+            {{ form.date_start }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">End Date</label>
+            {{ form.date_end }}
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-600">Streams (classes this exam applies to)</label>
+            <div class="p-3 border rounded" style="border-radius:0.6rem;">
+              {{ form.streams }}
+            </div>
+          </div>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+            <i class="bi bi-check-lg me-1"></i>Save Exam
+          </button>
+          <a href="{% url 'exams:list' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

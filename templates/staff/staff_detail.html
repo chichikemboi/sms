@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{ member.get_full_name }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Staff Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+  <a href="{% url 'staff:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <a href="{% url 'staff:edit' member.pk %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-pencil me-1"></i>Edit Profile
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm text-center p-4" style="border-radius:1rem;">
+      {% if member.profile_photo %}
+        <img src="{{ member.profile_photo.url }}" class="rounded-circle mx-auto mb-3" style="width:90px;height:90px;object-fit:cover;">
+      {% else %}
+        <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+             style="width:90px;height:90px;background:#1B3A6B;color:#C9A227;font-size:2rem;font-weight:700;">
+          {{ member.first_name|first }}{{ member.last_name|first }}
+        </div>
+      {% endif %}
+      <h5 class="fw-700 mb-1" style="color:#1B3A6B;">{{ member.get_full_name }}</h5>
+      <div class="badge rounded-pill px-3 py-1 mb-2" style="background:#C9A227;color:#fff;">{{ member.get_role_display }}</div>
+      {% if member.class_assigned %}
+      <div class="text-muted small">Class: {{ member.class_assigned }}</div>
+      {% endif %}
+      <div class="text-muted small">{{ member.phone|default:'No phone' }}</div>
+      <div class="text-muted small">{{ member.email|default:'No email' }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-8">
+    <div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;">Employment Details</h6>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="small text-muted">TSC Number</div><div class="fw-600">{{ profile.tsc_number|default:'—' }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">National ID</div><div class="fw-600">{{ profile.national_id|default:'—' }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">Employment Status</div><div class="fw-600">{{ profile.get_employment_status_display }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">Date Joined</div><div class="fw-600">{{ profile.date_joined|date:'d M Y'|default:'—' }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">Qualification</div><div class="fw-600">{{ profile.qualification|default:'—' }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">Specialization</div><div class="fw-600">{{ profile.specialization|default:'—' }}</div></div>
+        <div class="col-12">
+          <div class="small text-muted mb-1">Subjects Taught</div>
+          <div class="d-flex flex-wrap gap-1">
+            {% for subj in profile.subjects_taught.all %}
+              <span class="badge bg-primary bg-opacity-10 text-primary">{{ subj.name }}</span>
+            {% empty %}
+              <span class="text-muted small">None assigned</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <hr>
+      <h6 class="fw-700 mb-3" style="color:#1B3A6B;">Emergency Contact</h6>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="small text-muted">Name</div><div class="fw-600">{{ profile.emergency_contact_name|default:'—' }}</div></div>
+        <div class="col-md-6"><div class="small text-muted">Phone</div><div class="fw-600">{{ profile.emergency_contact_phone|default:'—' }}</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Mark Entry — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Mark Entry{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+  <a href="{% url 'exams:mark_entry_select' exam.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <div>
+    <span class="fw-700" style="color:#1B3A6B;">{{ exam.name }}</span>
+    <span class="text-muted mx-2">·</span>
+    <span class="text-muted">{{ section }}</span>
+    <span class="text-muted mx-2">·</span>
+    <span class="text-muted">{{ subject.name }}</span>
+  </div>
+  <a href="{% url 'exams:results' exam.pk section.pk %}" class="btn btn-sm btn-outline-primary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-bar-chart me-1"></i>View Analysis
+  </a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:#F4F6FB;">
+          <tr>
+            <th class="ps-4 py-3 small" style="color:#1B3A6B;">#</th>
+            <th class="py-3 small" style="color:#1B3A6B;">Student</th>
+            <th class="py-3 small" style="color:#1B3A6B;">Score <span class="text-muted">(out of {{ max_score }})</span></th>
+            <th class="py-3 small" style="color:#1B3A6B;">Grade</th>
+            <th class="py-3 small text-center" style="color:#1B3A6B;">Absent</th>
+          </tr>
+        </thead>
+        <tbody id="markTable">
+          {% for row in rows %}
+          <tr id="row-{{ row.student.pk }}" {% if row.is_absent %}class="table-warning"{% endif %}>
+            <td class="ps-4 text-muted small">{{ forloop.counter }}</td>
+            <td>
+              <div class="fw-600 small" style="color:#1B3A6B;">{{ row.student.full_name }}</div>
+              <div class="text-muted" style="font-size:0.72rem;">{{ row.student.admission_number }}</div>
+            </td>
+            <td>
+              <input type="number"
+                     name="score_{{ row.student.pk }}"
+                     id="score-{{ row.student.pk }}"
+                     value="{{ row.score }}"
+                     min="0" max="{{ max_score }}" step="0.5"
+                     class="form-control form-control-sm"
+                     style="width:90px;"
+                     {% if row.is_absent %}disabled{% endif %}
+                     oninput="updateGrade(this, {{ row.student.pk }})">
+            </td>
+            <td>
+              <span id="grade-{{ row.student.pk }}" class="badge
+                {% if row.grade == 'A' or row.grade == 'A-' %}bg-success
+                {% elif row.grade == 'B+' or row.grade == 'B' or row.grade == 'B-' %}bg-primary
+                {% elif row.grade == 'C+' or row.grade == 'C' or row.grade == 'C-' %}bg-warning text-dark
+                {% elif row.grade == 'ABS' %}bg-secondary
+                {% else %}bg-danger{% endif %}">
+                {{ row.grade }}
+              </span>
+            </td>
+            <td class="text-center">
+              <input type="checkbox"
+                     name="absent_{{ row.student.pk }}"
+                     class="form-check-input"
+                     style="width:1.2rem;height:1.2rem;"
+                     {% if row.is_absent %}checked{% endif %}
+                     onchange="toggleAbsent(this, {{ row.student.pk }})">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+      <i class="bi bi-save me-1"></i>Save All Marks
+    </button>
+    <a href="{% url 'exams:mark_entry_select' exam.pk %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">
+      Cancel
+    </a>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const KCSE_GRADES = [
+  [80,'A'],[75,'A-'],[70,'B+'],[65,'B'],[60,'B-'],
+  [55,'C+'],[50,'C'],[45,'C-'],[40,'D+'],[35,'D'],[30,'D-'],[0,'E']
+];
+const GRADE_CLASSES = {
+  'A':'bg-success','A-':'bg-success','B+':'bg-primary','B':'bg-primary','B-':'bg-primary',
+  'C+':'bg-warning text-dark','C':'bg-warning text-dark','C-':'bg-warning text-dark',
+  'D+':'bg-danger','D':'bg-danger','D-':'bg-danger','E':'bg-danger','—':'bg-secondary'
+};
+
+function getGrade(score) {
+  if (score === '' || isNaN(score)) return '—';
+  const s = parseFloat(score);
+  for (const [threshold, grade] of KCSE_GRADES) {
+    if (s >= threshold) return grade;
+  }
+  return 'E';
+}
+
+function updateGrade(input, studentPk) {
+  const grade = getGrade(input.value);
+  const badge = document.getElementById('grade-' + studentPk);
+  badge.textContent = grade;
+  badge.className = 'badge ' + (GRADE_CLASSES[grade] || 'bg-secondary');
+}
+
+function toggleAbsent(checkbox, studentPk) {
+  const row = document.getElementById('row-' + studentPk);
+  const scoreInput = document.getElementById('score-' + studentPk);
+  const gradeBadge = document.getElementById('grade-' + studentPk);
+  if (checkbox.checked) {
+    row.classList.add('table-warning');
+    scoreInput.disabled = true;
+    scoreInput.value = '';
+    gradeBadge.textContent = 'ABS';
+    gradeBadge.className = 'badge bg-secondary';
+  } else {
+    row.classList.remove('table-warning');
+    scoreInput.disabled = false;
+    gradeBadge.textContent = '—';
+    gradeBadge.className = 'badge bg-secondary';
+  }
+}
+</script>
+{% endblock %}

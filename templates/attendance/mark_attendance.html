@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Mark Attendance — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Mark Attendance: {{ section }}{% endblock %}
+
+{% block content %}
+<!-- Date nav -->
+<div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+  <a href="{% url 'attendance:home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <a href="?date={{ prev_date }}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-chevron-left"></i>
+  </a>
+  <div class="fw-700" style="color:#1B3A6B;font-size:1.05rem;">
+    {{ att_date|date:'l, d F Y' }}
+    {% if is_today %}<span class="badge bg-primary ms-2" style="font-size:0.7rem;">Today</span>{% endif %}
+  </div>
+  <a href="?date={{ next_date }}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-chevron-right"></i>
+  </a>
+  <input type="date" value="{{ att_date|date:'Y-m-d' }}" class="form-control form-control-sm ms-2"
+         style="width:160px;" onchange="window.location='?date='+this.value">
+
+  <a href="{% url 'attendance:report' section.pk %}" class="btn btn-sm btn-outline-primary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-bar-chart me-1"></i>Report
+  </a>
+</div>
+
+<!-- Quick-mark all buttons -->
+<div class="mb-3 d-flex gap-2 flex-wrap">
+  <span class="small text-muted align-self-center">Mark all as:</span>
+  <button type="button" class="btn btn-sm btn-outline-success" onclick="markAll('P')" style="border-radius:0.6rem;">All Present</button>
+  <button type="button" class="btn btn-sm btn-outline-danger" onclick="markAll('A')" style="border-radius:0.6rem;">All Absent</button>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0" id="attTable">
+        <thead style="background:#F4F6FB;">
+          <tr>
+            <th class="ps-4 py-3 small" style="color:#1B3A6B;">#</th>
+            <th class="py-3 small" style="color:#1B3A6B;">Student</th>
+            <th class="py-3 small" style="color:#1B3A6B;">Status</th>
+            <th class="py-3 small" style="color:#1B3A6B;">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr id="att-row-{{ row.student.pk }}">
+            <td class="ps-4 text-muted small">{{ forloop.counter }}</td>
+            <td>
+              <div class="fw-600 small" style="color:#1B3A6B;">{{ row.student.full_name }}</div>
+              <div class="text-muted" style="font-size:0.72rem;">{{ row.student.admission_number }}</div>
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
+                {% for code, label in status_choices %}
+                <div class="form-check form-check-inline mb-0">
+                  <input class="form-check-input att-radio"
+                         type="radio"
+                         name="status_{{ row.student.pk }}"
+                         id="s{{ row.student.pk }}_{{ code }}"
+                         value="{{ code }}"
+                         data-row="{{ row.student.pk }}"
+                         {% if row.status == code %}checked{% endif %}
+                         onchange="highlightRow({{ row.student.pk }}, '{{ code }}')">
+                  <label class="form-check-label small" for="s{{ row.student.pk }}_{{ code }}">
+                    {{ label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </td>
+            <td>
+              <input type="text" name="notes_{{ row.student.pk }}"
+                     value="{{ row.record.notes|default:'' }}"
+                     class="form-control form-control-sm"
+                     style="width:180px;" placeholder="Optional note">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+      <i class="bi bi-save me-1"></i>Save Attendance
+    </button>
+    <a href="{% url 'attendance:home' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ROW_COLORS = { P: '', A: 'table-danger', L: 'table-warning', E: 'table-info' };
+
+function highlightRow(pk, code) {
+  const row = document.getElementById('att-row-' + pk);
+  row.className = ROW_COLORS[code] || '';
+}
+
+function markAll(code) {
+  document.querySelectorAll('.att-radio[value="' + code + '"]').forEach(radio => {
+    radio.checked = true;
+    highlightRow(radio.dataset.row, code);
+  });
+}
+
+// Apply highlight on load
+document.querySelectorAll('.att-radio:checked').forEach(radio => {
+  highlightRow(radio.dataset.row, radio.value);
+});
+</script>
+{% endblock %}

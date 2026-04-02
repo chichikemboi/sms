@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Welcome banner -->
+<div class="card border-0 mb-4" style="background:linear-gradient(135deg,#1B3A6B,#2A5298);border-radius:1.25rem;">
+  <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+      <h4 class="text-white mb-1 fw-700">
+        Good {% now "G" as h %}{% if h < 12 %}morning{% elif h < 17 %}afternoon{% else %}evening{% endif %},
+        {{ user.first_name }}!
+      </h4>
+      <div class="text-white-50 fs-6">{{ SCHOOL_NAME }}</div>
+    </div>
+    <div class="text-end">
+      <div class="badge rounded-pill px-3 py-2" style="background:#C9A227;font-size:0.8rem;">
+        {{ user.get_role_display }}
+      </div>
+      {% if user.class_assigned %}
+      <div class="text-white-50 mt-1 small">{{ user.class_assigned }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Module cards -->
+<div class="row g-3">
+  {% for mod in modules %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <a href="{{ mod.url }}" class="module-card card h-100 p-3 d-block">
+      <div class="card-body p-0">
+        <div class="card-icon bg-{{ mod.color }} bg-opacity-10 text-{{ mod.color }}">
+          <i class="bi {{ mod.icon }}"></i>
+        </div>
+        <h6 class="fw-700 mb-1" style="color:#1B3A6B;">{{ mod.name }}</h6>
+        <p class="text-muted small mb-0">{{ mod.desc }}</p>
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-warning">
+      No modules are assigned to your role. Please contact the administrator.
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

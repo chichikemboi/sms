@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">First Name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Last Name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            {% if form.username %}
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Role</label>
+              {{ form.role }}
+              {% if form.role.errors %}<div class="text-danger small mt-1">{{ form.role.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Class Assigned <span class="text-muted">(e.g. Form 4A)</span></label>
+              {{ form.class_assigned }}
+            </div>
+
+            {% if form.password1 %}
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Password</label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}<div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Confirm Password</label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}<div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.is_active %}
+            <div class="col-12">
+              <div class="form-check form-switch">
+                {{ form.is_active }}
+                <label class="form-check-label small fw-600">Account Active</label>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="col-12">
+              <label class="form-label fw-600 small">Profile Photo</label>
+              {{ form.profile_photo }}
+            </div>
+
+          </div>
+
+          <hr class="my-4">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+              <i class="bi bi-check-lg me-1"></i> Save
+            </button>
+            <a href="{% url 'accounts:user_list' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

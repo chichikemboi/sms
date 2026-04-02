@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Parent Letters — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Parent Letters & Reports{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- Report Cards -->
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm p-4 h-100" style="border-radius:1rem;">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="width:48px;height:48px;background:#EEF2FB;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-bar-chart-line-fill" style="color:#1B3A6B;font-size:1.3rem;"></i>
+        </div>
+        <div>
+          <h6 class="fw-700 mb-0" style="color:#1B3A6B;">Report Cards</h6>
+          <div class="text-muted small">Generate individual student PDF report cards</div>
+        </div>
+      </div>
+      <form method="get" action="">
+        <div class="mb-3">
+          <label class="form-label small fw-600">Exam</label>
+          <select name="exam" class="form-select" id="examSelect">
+            <option value="">— Select exam —</option>
+            {% for exam in exams %}
+            <option value="{{ exam.pk }}">{{ exam.name }} (T{{ exam.term }} {{ exam.year }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-600">Class</label>
+          <select name="section" class="form-select" id="sectionSelect">
+            <option value="">— Select class —</option>
+            {% for sec in sections %}
+            <option value="{{ sec.pk }}">{{ sec }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="button" onclick="openClassReports()" class="btn w-100"
+                style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+          <i class="bi bi-file-earmark-pdf me-1"></i>View Class Report Cards
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fee Statements -->
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm p-4 h-100" style="border-radius:1rem;">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="width:48px;height:48px;background:#FFF8E1;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-cash-coin" style="color:#C9A227;font-size:1.3rem;"></i>
+        </div>
+        <div>
+          <h6 class="fw-700 mb-0" style="color:#1B3A6B;">Fee Statements</h6>
+          <div class="text-muted small">Generate fee statement PDF for any student</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-600">Student Admission No.</label>
+        <input type="text" id="admissionInput" class="form-control" placeholder="e.g. BHS/2024/001">
+        <div class="form-text">Enter the admission number then click Generate</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-600">Or browse from Student Records</label>
+        <a href="{% url 'students:list' %}" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:0.6rem;">
+          <i class="bi bi-person-lines-fill me-1"></i>Go to Student Records
+        </a>
+        <div class="form-text">Click the student, then use the Fee Statement button on their profile.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Quick links section -->
+<div class="mt-4">
+  <h6 class="fw-700 mb-3" style="color:#1B3A6B;">Quick Access</h6>
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <a href="{% url 'fees:dashboard' %}" class="card border-0 shadow-sm p-3 d-block text-decoration-none" style="border-radius:0.75rem;">
+        <div class="small fw-600" style="color:#1B3A6B;"><i class="bi bi-cash-coin me-1 text-warning"></i>Fee Dashboard</div>
+        <div class="text-muted" style="font-size:0.75rem;">View all balances and payment records</div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="{% url 'exams:list' %}" class="card border-0 shadow-sm p-3 d-block text-decoration-none" style="border-radius:0.75rem;">
+        <div class="small fw-600" style="color:#1B3A6B;"><i class="bi bi-bar-chart-line me-1 text-success"></i>Exam Results</div>
+        <div class="text-muted" style="font-size:0.75rem;">View and analyse exam results</div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="{% url 'students:list' %}" class="card border-0 shadow-sm p-3 d-block text-decoration-none" style="border-radius:0.75rem;">
+        <div class="small fw-600" style="color:#1B3A6B;"><i class="bi bi-person-lines-fill me-1 text-primary"></i>Student Records</div>
+        <div class="text-muted" style="font-size:0.75rem;">Browse all student profiles</div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openClassReports() {
+  const exam = document.getElementById('examSelect').value;
+  const section = document.getElementById('sectionSelect').value;
+  if (!exam || !section) {
+    alert('Please select both an exam and a class.');
+    return;
+  }
+  window.open(`/letters/class-reports/${exam}/${section}/`, '_blank');
+}
+</script>
+{% endblock %}

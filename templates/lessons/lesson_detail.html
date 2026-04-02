@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ plan.topic }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Lesson Plan{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-4">
+  <a href="{% url 'lessons:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <a href="{% url 'lessons:edit' plan.pk %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-pencil me-1"></i>Edit
+  </a>
+  <button onclick="window.print()" class="btn btn-sm btn-outline-secondary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-printer me-1"></i>Print
+  </button>
+</div>
+
+<div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+    <div>
+      <h5 class="fw-700 mb-1" style="color:#1B3A6B;">{{ plan.topic }}</h5>
+      <div class="text-muted small">
+        {{ plan.subject.name }} · {{ plan.class_section }} · Week {{ plan.week_number }},
+        Term {{ plan.term }} {{ plan.year }}
+      </div>
+      <div class="text-muted small">Teacher: {{ plan.teacher.get_full_name }}</div>
+    </div>
+    <span class="badge px-3 py-2
+      {% if plan.status == 'approved' %}bg-success
+      {% elif plan.status == 'submitted' %}bg-primary
+      {% else %}bg-secondary{% endif %}">
+      {{ plan.get_status_display }}
+    </span>
+  </div>
+
+  <hr>
+
+  {% if plan.unit %}
+  <div class="mb-3">
+    <div class="small text-muted fw-600 mb-1">Syllabus Unit</div>
+    <div>{{ plan.unit.title }}</div>
+  </div>
+  {% endif %}
+
+  <div class="mb-3">
+    <div class="small text-muted fw-600 mb-1">Learning Objectives</div>
+    <div class="p-3 rounded" style="background:#F4F6FB;">{{ plan.objectives|linebreaks }}</div>
+  </div>
+  <div class="mb-3">
+    <div class="small text-muted fw-600 mb-1">Content Outline</div>
+    <div class="p-3 rounded" style="background:#F4F6FB;">{{ plan.content_outline|linebreaks }}</div>
+  </div>
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <div class="small text-muted fw-600 mb-1">Teaching Methods</div>
+      <div>{{ plan.teaching_methods|default:'—' }}</div>
+    </div>
+    <div class="col-md-6">
+      <div class="small text-muted fw-600 mb-1">Resources / Materials</div>
+      <div>{{ plan.resources|default:'—'|linebreaks }}</div>
+    </div>
+  </div>
+  <div class="mb-3">
+    <div class="small text-muted fw-600 mb-1">Assessment</div>
+    <div>{{ plan.assessment|default:'—'|linebreaks }}</div>
+  </div>
+  {% if plan.remarks %}
+  <div class="mb-3">
+    <div class="small text-muted fw-600 mb-1">Post-Lesson Remarks</div>
+    <div class="p-3 rounded border-start border-4 border-warning" style="background:#FFFDF0;">
+      {{ plan.remarks|linebreaks }}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

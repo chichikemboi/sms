@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Class Report Cards — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Report Cards: {{ section }} — {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-4">
+  <a href="{% url 'letters:home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4 p-3" style="border-radius:1rem;background:linear-gradient(135deg,#1B3A6B,#2A5298);">
+  <div class="text-white fw-700">{{ exam.name }}</div>
+  <div class="text-white-50 small">{{ exam.get_term_display }} · {{ exam.year }} · {{ section }}</div>
+</div>
+
+<p class="text-muted small mb-3">Click <strong>PDF</strong> to open each student's report card. Right-click → Save As to download.</p>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-3 small" style="color:#1B3A6B;">#</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Student</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Admission No.</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Report Card</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Fee Statement</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td class="ps-4 text-muted small">{{ forloop.counter }}</td>
+          <td class="fw-600 small" style="color:#1B3A6B;">{{ student.full_name }}</td>
+          <td class="small text-muted">{{ student.admission_number }}</td>
+          <td>
+            <a href="{% url 'letters:report_card' student.pk exam.pk %}"
+               target="_blank"
+               class="btn btn-sm btn-outline-primary" style="border-radius:0.5rem;">
+              <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+            </a>
+          </td>
+          <td>
+            <a href="{% url 'letters:fee_statement' student.pk %}"
+               target="_blank"
+               class="btn btn-sm btn-outline-success" style="border-radius:0.5rem;">
+              <i class="bi bi-receipt me-1"></i>Fees
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-4 text-muted">No active students in this class.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label small fw-600">Category</label>{{ form.category }}</div>
+          <div class="col-md-6"><label class="form-label small fw-600">Item Name *</label>{{ form.name }}</div>
+          <div class="col-md-4"><label class="form-label small fw-600">Quantity</label>{{ form.quantity }}</div>
+          <div class="col-md-4"><label class="form-label small fw-600">Condition</label>{{ form.condition }}</div>
+          <div class="col-md-4"><label class="form-label small fw-600">Value (KSh)</label>{{ form.value_kes }}</div>
+          <div class="col-md-6"><label class="form-label small fw-600">Location</label>{{ form.location }}</div>
+          <div class="col-md-6"><label class="form-label small fw-600">Serial Number</label>{{ form.serial_number }}</div>
+          <div class="col-md-6"><label class="form-label small fw-600">Date Acquired</label>{{ form.date_acquired }}</div>
+          <div class="col-12"><label class="form-label small fw-600">Description</label>{{ form.description }}</div>
+          <div class="col-12"><label class="form-label small fw-600">Notes</label>{{ form.notes }}</div>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+            <i class="bi bi-check-lg me-1"></i>Save
+          </button>
+          <a href="{% url 'inventory:list' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

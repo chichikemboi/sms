@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-600">First Name *</label>
+            {{ form.first_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Last Name *</label>
+            {{ form.last_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Relation *</label>
+            {{ form.relation }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Primary Phone *</label>
+            {{ form.phone_primary }}
+            {% if form.phone_primary.errors %}<div class="text-danger small">{{ form.phone_primary.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Secondary Phone</label>
+            {{ form.phone_secondary }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Email</label>
+            {{ form.email }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">National ID / Passport</label>
+            {{ form.id_number }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-600">Occupation</label>
+            {{ form.occupation }}
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-600">Address</label>
+            {{ form.address }}
+          </div>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn px-4" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+            <i class="bi bi-check-lg me-1"></i>Save
+          </button>
+          <a href="{% url 'students:guardian_list' %}" class="btn btn-outline-secondary" style="border-radius:0.6rem;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

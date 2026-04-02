@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Report — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Attendance Report: {{ section }}{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-4">
+  <a href="{% url 'attendance:home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <a href="{% url 'attendance:mark' section.pk %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-pencil-square me-1"></i>Mark Today
+  </a>
+  <button onclick="window.print()" class="btn btn-sm btn-outline-secondary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-printer me-1"></i>Print
+  </button>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-3 small" style="color:#1B3A6B;">Student</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Present</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Absent</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Late</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Excused</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Total Days</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td class="ps-4">
+            <div class="fw-600 small" style="color:#1B3A6B;">{{ row.student.full_name }}</div>
+            <div class="text-muted" style="font-size:0.72rem;">{{ row.student.admission_number }}</div>
+          </td>
+          <td class="text-center small text-success fw-600">{{ row.stats.P }}</td>
+          <td class="text-center small text-danger fw-600">{{ row.stats.A }}</td>
+          <td class="text-center small text-warning fw-600">{{ row.stats.L }}</td>
+          <td class="text-center small text-info fw-600">{{ row.stats.E }}</td>
+          <td class="text-center small text-muted">{{ row.total }}</td>
+          <td class="text-center">
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <div class="progress flex-fill" style="height:6px;max-width:80px;">
+                <div class="progress-bar {% if row.rate >= 80 %}bg-success{% elif row.rate >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                     style="width:{{ row.rate }}%"></div>
+              </div>
+              <span class="small fw-600 {% if row.rate >= 80 %}text-success{% elif row.rate >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                {{ row.rate }}%
+              </span>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4 text-muted">No attendance records yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Results Analysis — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Results Analysis{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+  <a href="{% url 'exams:mark_entry_select' exam.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <div>
+    <span class="fw-700" style="color:#1B3A6B;">{{ exam.name }}</span>
+    <span class="text-muted mx-2">·</span>
+    <span class="text-muted">{{ section }}</span>
+  </div>
+  <button onclick="window.print()" class="btn btn-sm btn-outline-primary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-printer me-1"></i>Print
+  </button>
+</div>
+
+<!-- Summary stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm p-3 text-center" style="border-radius:1rem;">
+      <div style="font-size:1.8rem;font-weight:700;color:#1B3A6B;">{{ rows|length }}</div>
+      <div class="text-muted small">Students</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm p-3 text-center" style="border-radius:1rem;">
+      <div style="font-size:1.8rem;font-weight:700;color:#1B3A6B;">{{ subjects|length }}</div>
+      <div class="text-muted small">Subjects</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm p-3 text-center" style="border-radius:1rem;">
+      <div style="font-size:1.8rem;font-weight:700;color:#1B3A6B;">
+        {% if rows %}{{ rows.0.mean_grade }}{% else %}—{% endif %}
+      </div>
+      <div class="text-muted small">Top Mean Grade</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm p-3 text-center" style="border-radius:1rem;">
+      <div style="font-size:1.8rem;font-weight:700;color:#1B3A6B;">
+        {% if rows %}{{ rows.0.student.short_name }}{% else %}—{% endif %}
+      </div>
+      <div class="text-muted small">Top Student</div>
+    </div>
+  </div>
+</div>
+
+<!-- Results table -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius:1rem;">
+  <div class="card-header bg-white border-0 p-3 d-flex align-items-center" style="border-radius:1rem 1rem 0 0;">
+    <h6 class="fw-700 mb-0" style="color:#1B3A6B;">Class Results — {{ section }}</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover align-middle mb-0" style="font-size:0.82rem;">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-3 py-2" style="color:#1B3A6B;">Pos</th>
+          <th class="py-2" style="color:#1B3A6B;">Student</th>
+          {% for subj in subjects %}
+          <th class="py-2 text-center" style="color:#1B3A6B;" title="{{ subj.name }}">{{ subj.code }}</th>
+          {% endfor %}
+          <th class="py-2 text-center" style="color:#1B3A6B;">Pts</th>
+          <th class="py-2 text-center" style="color:#1B3A6B;">Mean</th>
+          <th class="py-2 text-center" style="color:#1B3A6B;">Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr {% if forloop.counter <= 3 %}style="background:#FFFBEA;"{% endif %}>
+          <td class="ps-3 fw-700" style="color:#C9A227;">{{ row.position }}</td>
+          <td>
+            <div class="fw-600" style="color:#1B3A6B;">{{ row.student.short_name }}</div>
+            <div class="text-muted" style="font-size:0.7rem;">{{ row.student.admission_number }}</div>
+          </td>
+          {% for sc in row.scores %}
+          <td class="text-center">
+            <span class="{% if sc.score == 'ABS' %}text-muted{% elif sc.score == '—' %}text-muted{% elif sc.score >= 50 %}text-success{% else %}text-danger{% endif %}">
+              {{ sc.score }}
+            </span>
+          </td>
+          {% endfor %}
+          <td class="text-center fw-600">{{ row.total_pts }}</td>
+          <td class="text-center fw-600">{{ row.mean_pts }}</td>
+          <td class="text-center">
+            <span class="badge
+              {% if row.mean_grade == 'A' or row.mean_grade == 'A-' %}bg-success
+              {% elif row.mean_grade == 'B+' or row.mean_grade == 'B' or row.mean_grade == 'B-' %}bg-primary
+              {% elif row.mean_grade == 'C+' or row.mean_grade == 'C' or row.mean_grade == 'C-' %}bg-warning text-dark
+              {% else %}bg-danger{% endif %}">
+              {{ row.mean_grade }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="20" class="text-center py-4 text-muted">No marks entered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Subject averages -->
+{% if subject_stats %}
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="card-header bg-white border-0 p-3" style="border-radius:1rem 1rem 0 0;">
+    <h6 class="fw-700 mb-0" style="color:#1B3A6B;">Subject Performance Summary</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-2 small" style="color:#1B3A6B;">Subject</th>
+          <th class="py-2 small text-center" style="color:#1B3A6B;">Avg Score</th>
+          <th class="py-2 small text-center" style="color:#1B3A6B;">Highest</th>
+          <th class="py-2 small text-center" style="color:#1B3A6B;">Lowest</th>
+          <th class="py-2 small text-center" style="color:#1B3A6B;">Entries</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stat in subject_stats %}
+        <tr>
+          <td class="ps-4 fw-600 small" style="color:#1B3A6B;">{{ stat.subject.name }}</td>
+          <td class="text-center small {% if stat.avg >= 50 %}text-success{% else %}text-danger{% endif %} fw-600">
+            {{ stat.avg }}
+          </td>
+          <td class="text-center small text-success">{{ stat.highest }}</td>
+          <td class="text-center small text-danger">{{ stat.lowest }}</td>
+          <td class="text-center small text-muted">{{ stat.entries }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

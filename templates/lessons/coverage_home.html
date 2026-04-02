@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Syllabus Coverage — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Syllabus Coverage Tracker{% endblock %}
+
+{% block content %}
+<p class="text-muted mb-4">Select a class and subject to track topic coverage.</p>
+<div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+  <form method="get" action="">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label small fw-600">Class</label>
+        <select name="section" class="form-select" required>
+          <option value="">— Select class —</option>
+          {% for sec in sections %}
+          <option value="{{ sec.pk }}">{{ sec }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small fw-600">Subject</label>
+        <select name="subject" class="form-select" required>
+          <option value="">— Select subject —</option>
+          {% for subj in subjects %}
+          <option value="{{ subj.pk }}">{{ subj.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn w-100" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;"
+                onclick="redirectToCoverage(event)">Go</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function redirectToCoverage(e) {
+  e.preventDefault();
+  const section = document.querySelector('select[name=section]').value;
+  const subject = document.querySelector('select[name=subject]').value;
+  if (section && subject) {
+    window.location.href = `/lessons/coverage/${section}/${subject}/`;
+  }
+}
+</script>
+{% endblock %}

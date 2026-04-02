@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.full_name }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{% url 'students:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back to List
+  </a>
+  {% if user.is_admin or user.is_class_teacher %}
+  <a href="{% url 'students:edit' student.pk %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-pencil me-1"></i>Edit
+  </a>
+  {% endif %}
+</div>
+
+<div class="row g-4">
+  <!-- Left: photo + quick info -->
+  <div class="col-12 col-md-3">
+    <div class="card border-0 shadow-sm text-center p-4" style="border-radius:1rem;">
+      {% if student.photo %}
+        <img src="{{ student.photo.url }}" class="rounded-circle mx-auto mb-3"
+             style="width:100px;height:100px;object-fit:cover;">
+      {% else %}
+        <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+             style="width:100px;height:100px;background:#1B3A6B;color:#C9A227;font-size:2.2rem;font-weight:700;">
+          {{ student.first_name|first }}{{ student.last_name|first }}
+        </div>
+      {% endif %}
+      <h6 class="fw-700 mb-1" style="color:#1B3A6B;">{{ student.full_name }}</h6>
+      <div class="small text-muted mb-2">{{ student.admission_number }}</div>
+      <span class="badge rounded-pill px-3 py-1 mb-2
+        {% if student.status == 'active' %}bg-success{% else %}bg-warning{% endif %}">
+        {{ student.get_status_display }}
+      </span>
+      <div class="small text-muted">{{ student.class_section }}</div>
+      <div class="small text-muted">{{ student.get_boarding_type_display }}</div>
+    </div>
+  </div>
+
+  <!-- Right: details tabs -->
+  <div class="col-12 col-md-9">
+    <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+      <div class="card-header bg-white border-0 pt-3 pb-0" style="border-radius:1rem 1rem 0 0;">
+        <ul class="nav nav-tabs border-0" id="profileTabs">
+          <li class="nav-item">
+            <a class="nav-link active small fw-600" data-bs-toggle="tab" href="#personal">Personal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link small fw-600" data-bs-toggle="tab" href="#guardian">Guardian</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link small fw-600" data-bs-toggle="tab" href="#academic">Academic Entry</a>
+          </li>
+          {% if user.is_admin or user.is_class_teacher %}
+          <li class="nav-item">
+            <a class="nav-link small fw-600" data-bs-toggle="tab" href="#notes">Notes</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="card-body tab-content p-4">
+
+        <!-- Personal tab -->
+        <div class="tab-pane fade show active" id="personal">
+          <div class="row g-3">
+            {% include 'students/partials/info_row.html' with label='Full Name' value=student.full_name %}
+            {% include 'students/partials/info_row.html' with label='Date of Birth' value=student.date_of_birth|date:'d M Y'|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='Gender' value=student.get_gender_display %}
+            {% include 'students/partials/info_row.html' with label='Admission Date' value=student.date_admitted|date:'d M Y' %}
+            {% include 'students/partials/info_row.html' with label='NEMIS No.' value=student.nemis_no|default:'—' %}
+          </div>
+        </div>
+
+        <!-- Guardian tab -->
+        <div class="tab-pane fade" id="guardian">
+          <div class="row g-3">
+            {% include 'students/partials/info_row.html' with label='Name' value=student.guardian.full_name %}
+            {% include 'students/partials/info_row.html' with label='Relation' value=student.guardian.get_relation_display %}
+            {% include 'students/partials/info_row.html' with label='Primary Phone' value=student.guardian.phone_primary %}
+            {% include 'students/partials/info_row.html' with label='Secondary Phone' value=student.guardian.phone_secondary|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='Email' value=student.guardian.email|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='National ID' value=student.guardian.id_number|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='Occupation' value=student.guardian.occupation|default:'—' %}
+          </div>
+        </div>
+
+        <!-- Academic entry tab -->
+        <div class="tab-pane fade" id="academic">
+          <div class="row g-3">
+            {% include 'students/partials/info_row.html' with label='KCPE Index No.' value=student.kcpe_index|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='KCPE Marks' value=student.kcpe_marks|default:'—' %}
+            {% include 'students/partials/info_row.html' with label='Class' value=student.class_section %}
+            {% include 'students/partials/info_row.html' with label='Class Teacher' value=student.class_section.class_teacher|default:'Not assigned' %}
+          </div>
+        </div>
+
+        <!-- Notes tab (admin/class teacher only) -->
+        {% if user.is_admin or user.is_class_teacher %}
+        <div class="tab-pane fade" id="notes">
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="small fw-600 text-muted mb-1">Medical Notes</div>
+              <div class="p-3 rounded" style="background:#F4F6FB;font-size:0.88rem;">
+                {{ student.medical_notes|linebreaks|default:'None recorded.' }}
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="small fw-600 text-muted mb-1">Special Needs</div>
+              <div class="p-3 rounded" style="background:#F4F6FB;font-size:0.88rem;">
+                {{ student.special_needs|linebreaks|default:'None recorded.' }}
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="small fw-600 text-muted mb-1">Admin Notes</div>
+              <div class="p-3 rounded" style="background:#F4F6FB;font-size:0.88rem;">
+                {{ student.notes|linebreaks|default:'No notes.' }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

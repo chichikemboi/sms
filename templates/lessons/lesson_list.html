@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Lesson Plans — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Lesson Plans{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <form method="get" class="d-flex gap-2 align-items-center">
+    <select name="term" class="form-select form-select-sm" style="width:120px;">
+      <option value="">All Terms</option>
+      <option value="1" {% if sel_term == '1' %}selected{% endif %}>Term 1</option>
+      <option value="2" {% if sel_term == '2' %}selected{% endif %}>Term 2</option>
+      <option value="3" {% if sel_term == '3' %}selected{% endif %}>Term 3</option>
+    </select>
+    <select name="year" class="form-select form-select-sm" style="width:100px;">
+      {% for y in years %}<option value="{{ y }}" {% if y == sel_year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">Filter</button>
+  </form>
+  <div class="d-flex gap-2">
+    <a href="{% url 'lessons:coverage_home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+      <i class="bi bi-check2-square me-1"></i>Syllabus Coverage
+    </a>
+    <a href="{% url 'lessons:create' %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+      <i class="bi bi-plus-lg me-1"></i>New Plan
+    </a>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-3 small" style="color:#1B3A6B;">Topic</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Subject</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Class</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Week</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Term/Year</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Status</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Teacher</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in plans %}
+        <tr>
+          <td class="ps-4">
+            <div class="fw-600 small" style="color:#1B3A6B;">{{ plan.topic|truncatechars:45 }}</div>
+          </td>
+          <td class="small text-muted">{{ plan.subject.name }}</td>
+          <td class="small text-muted">{{ plan.class_section }}</td>
+          <td class="text-center small">W{{ plan.week_number }}</td>
+          <td class="small text-muted">T{{ plan.term }}/{{ plan.year }}</td>
+          <td>
+            <span class="badge
+              {% if plan.status == 'approved' %}bg-success bg-opacity-10 text-success
+              {% elif plan.status == 'submitted' %}bg-primary bg-opacity-10 text-primary
+              {% else %}bg-secondary bg-opacity-10 text-secondary{% endif %}">
+              {{ plan.get_status_display }}
+            </span>
+          </td>
+          <td class="small text-muted">{{ plan.teacher.get_full_name }}</td>
+          <td>
+            <a href="{% url 'lessons:detail' plan.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:0.5rem;">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{% url 'lessons:edit' plan.pk %}" class="btn btn-sm btn-outline-secondary ms-1" style="border-radius:0.5rem;">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center py-5 text-muted">
+            <i class="bi bi-journal-x" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
+            No lesson plans found. <a href="{% url 'lessons:create' %}">Create the first one.</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Inventory — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Resource Inventory{% endblock %}
+
+{% block content %}
+<form method="get" class="card border-0 shadow-sm p-3 mb-4" style="border-radius:1rem;">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search items...">
+    </div>
+    <div class="col-md-3">
+      <select name="category" class="form-select form-select-sm">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.pk }}" {% if sel_category == cat.pk|stringformat:'s' %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select name="condition" class="form-select form-select-sm">
+        <option value="">All Conditions</option>
+        {% for code, label in condition_choices %}
+        <option value="{{ code }}" {% if sel_condition == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+      <button class="btn btn-sm w-100" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">Filter</button>
+      <a href="{% url 'inventory:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">✕</a>
+    </div>
+  </div>
+</form>
+
+<div class="d-flex justify-content-end mb-3">
+  <a href="{% url 'inventory:create' %}" class="btn btn-sm" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+    <i class="bi bi-plus-lg me-1"></i>Add Item
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead style="background:#F4F6FB;">
+        <tr>
+          <th class="ps-4 py-3 small" style="color:#1B3A6B;">Item</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Category</th>
+          <th class="py-3 small text-center" style="color:#1B3A6B;">Qty</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Condition</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Location</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Value (KSh)</th>
+          <th class="py-3 small" style="color:#1B3A6B;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td class="ps-4">
+            <div class="fw-600 small" style="color:#1B3A6B;">{{ item.name }}</div>
+            {% if item.serial_number %}<div class="text-muted" style="font-size:0.72rem;">SN: {{ item.serial_number }}</div>{% endif %}
+          </td>
+          <td class="small text-muted">{{ item.category.name|default:'—' }}</td>
+          <td class="text-center fw-700" style="color:#1B3A6B;">{{ item.quantity }}</td>
+          <td>
+            <span class="badge
+              {% if item.condition == 'good' %}bg-success bg-opacity-10 text-success
+              {% elif item.condition == 'fair' %}bg-warning bg-opacity-10 text-warning
+              {% else %}bg-danger bg-opacity-10 text-danger{% endif %}">
+              {{ item.get_condition_display }}
+            </span>
+          </td>
+          <td class="small text-muted">{{ item.location|default:'—' }}</td>
+          <td class="small text-muted">{% if item.value_kes %}{{ item.value_kes|floatformat:0 }}{% else %}—{% endif %}</td>
+          <td>
+            <a href="{% url 'inventory:edit' item.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.5rem;">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post" action="{% url 'inventory:delete' item.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger ms-1" style="border-radius:0.5rem;"
+                      onclick="return confirm('Delete {{ item.name }}?')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4 text-muted">No inventory items found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

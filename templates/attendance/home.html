@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Attendance — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Attendance{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  {% for section in sections %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <div class="card border-0 shadow-sm h-100 p-3" style="border-radius:1rem;">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="width:48px;height:48px;background:#E8F0FD;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-calendar2-check-fill" style="color:#1B3A6B;font-size:1.3rem;"></i>
+        </div>
+        <div>
+          <div class="fw-700" style="color:#1B3A6B;">{{ section }}</div>
+          <div class="text-muted small">{{ section.class_teacher|default:'No class teacher assigned' }}</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'attendance:mark' section.pk %}" class="btn btn-sm flex-fill" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">
+          <i class="bi bi-pencil-square me-1"></i>Mark Today
+        </a>
+        <a href="{% url 'attendance:report' section.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+          <i class="bi bi-bar-chart"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center py-5 text-muted">No classes assigned to you.</div>
+  {% endfor %}
+</div>
+{% endblock %}

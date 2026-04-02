@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Select Class & Subject — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Enter Marks: {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'exams:list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>Back to Exams
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm p-4 mb-4" style="border-radius:1rem;background:linear-gradient(135deg,#1B3A6B,#2A5298);">
+  <h5 class="text-white fw-700 mb-1">{{ exam.name }}</h5>
+  <div class="text-white-50 small">{{ exam.get_term_display }} · {{ exam.year }} · {{ exam.get_exam_type_display }}</div>
+</div>
+
+<div class="card border-0 shadow-sm p-4" style="border-radius:1rem;">
+  <h6 class="fw-700 mb-3" style="color:#1B3A6B;">Select Class and Subject to Enter Marks</h6>
+  <form method="get" action="">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label small fw-600">Class</label>
+        <select name="section" class="form-select" required>
+          <option value="">— Select class —</option>
+          {% for sec in sections %}
+          <option value="{{ sec.pk }}" {% if request.GET.section == sec.pk|stringformat:'s' %}selected{% endif %}>
+            {{ sec }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small fw-600">Subject</label>
+        <select name="subject" class="form-select" required>
+          <option value="">— Select subject —</option>
+          {% for subj in subjects %}
+          <option value="{{ subj.pk }}" {% if request.GET.subject == subj.pk|stringformat:'s' %}selected{% endif %}>
+            {{ subj.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn w-100" style="background:#1B3A6B;color:#fff;border-radius:0.6rem;">Go</button>
+      </div>
+    </div>
+  </form>
+
+  {% if request.GET.section and request.GET.subject %}
+  <div class="mt-3">
+    <a href="{% url 'exams:mark_entry' exam.pk request.GET.section request.GET.subject %}"
+       class="btn" style="background:#C9A227;color:#fff;border-radius:0.6rem;">
+      <i class="bi bi-pencil-square me-1"></i>Open Mark Entry Grid
+    </a>
+    <a href="{% url 'exams:results' exam.pk request.GET.section %}"
+       class="btn btn-outline-secondary ms-2" style="border-radius:0.6rem;">
+      <i class="bi bi-bar-chart me-1"></i>View Results / Analysis
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

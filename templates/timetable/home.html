@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Timetable — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Timetable{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  {% for section in sections %}
+  <div class="col-6 col-md-4 col-lg-3">
+    <a href="{% url 'timetable:view' section.pk %}"
+       class="card border-0 shadow-sm p-3 text-center d-block text-decoration-none module-card"
+       style="border-radius:1rem;">
+      <div style="font-size:2rem;">📅</div>
+      <div class="fw-700 mt-2" style="color:#1B3A6B;">{{ section }}</div>
+      <div class="text-muted small">{{ section.class_teacher|default:'—' }}</div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center py-5 text-muted">No classes found.</div>
+  {% endfor %}
+</div>
+{% endblock %}

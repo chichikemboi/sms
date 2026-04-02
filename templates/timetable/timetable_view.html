@@ -1,0 +1,78 @@
+{% load timetable_tags %}
+{% extends 'base.html' %}
+{% block title %}Timetable: {{ section }} — {{ SCHOOL_SHORT }} SMS{% endblock %}
+{% block page_title %}Timetable: {{ section }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+  <a href="{% url 'timetable:home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:0.6rem;">
+    <i class="bi bi-arrow-left me-1"></i>All Classes
+  </a>
+  <button onclick="window.print()" class="btn btn-sm btn-outline-secondary ms-auto" style="border-radius:0.6rem;">
+    <i class="bi bi-printer me-1"></i>Print
+  </button>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:1rem;overflow:hidden;">
+  <div class="table-responsive">
+    <table class="table table-bordered mb-0" style="min-width:700px;">
+      <thead>
+        <tr style="background:#1B3A6B;">
+          <th class="py-3 ps-3 text-white small" style="width:130px;">Period</th>
+          {% for day_num, day_name in days %}
+          <th class="py-3 text-center text-white small">{{ day_name }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for period in periods %}
+        <tr {% if period.is_break %}style="background:#FFF8E1;"{% endif %}>
+          <td class="ps-3 py-2">
+            <div class="small fw-600" style="color:#1B3A6B;">{{ period.name }}</div>
+            <div class="text-muted" style="font-size:0.7rem;">
+              {{ period.start_time|time:"H:i" }}–{{ period.end_time|time:"H:i" }}
+            </div>
+          </td>
+          {% for day_num, day_name in days %}
+          {% if period.is_break %}
+          <td class="text-center text-muted small py-2" colspan="1">
+            {% if forloop.first %}
+            <span style="font-size:0.75rem;color:#C9A227;">☕ {{ period.name }}</span>
+            {% endif %}
+          </td>
+          {% else %}
+          {% with slot=grid|dicthash:day_num %}
+          <td class="py-2 px-2 text-center" style="vertical-align:middle;min-height:70px;">
+            {% with cell=slot|dicthash:period.pk %}
+            {% if cell and cell.subject %}
+            <div style="background:#EEF2FB;border-radius:0.5rem;padding:0.4rem 0.5rem;">
+              <div class="fw-600" style="color:#1B3A6B;font-size:0.78rem;">{{ cell.subject.name }}</div>
+              {% if cell.teacher %}
+              <div class="text-muted" style="font-size:0.68rem;">{{ cell.teacher.get_full_name }}</div>
+              {% endif %}
+              {% if cell.room %}
+              <div class="text-muted" style="font-size:0.65rem;">{{ cell.room }}</div>
+              {% endif %}
+            </div>
+            {% else %}
+            <div style="color:#ccc;font-size:0.75rem;">—</div>
+            {% endif %}
+            {% if can_edit %}
+            <a href="{% url 'timetable:slot_edit' section.pk day_num period.pk %}"
+               class="btn btn-sm mt-1 py-0 px-2"
+               style="font-size:0.65rem;background:transparent;color:#1B3A6B;border:1px dashed #1B3A6B;border-radius:0.4rem;">
+              edit
+            </a>
+            {% endif %}
+            {% endwith %}
+          </td>
+          {% endwith %}
+          {% endif %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
