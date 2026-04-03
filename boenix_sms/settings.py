@@ -68,11 +68,11 @@ WSGI_APPLICATION = 'boenix_sms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='postgres'),
-        'USER': env('DB_USER', default='postgres'),
-        'PASSWORD': env('DB_PASSWORD', default=''),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+        'NAME': 'postgres',
+        'USER': 'postgres.yfyvcaitukszpatcjnlg',
+        'PASSWORD': '#PqFWG3#vH53s3d',
+        'HOST': 'aws-1-eu-west-2.pooler.supabase.com',
+        'PORT': '6543',
         'OPTIONS': {
             'sslmode': 'require',
         },
